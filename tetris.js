@@ -52,7 +52,7 @@ function Block (pos, color) {
 	// para establecer la anchura del bloque y la anchura de la línea.
 
 	//Calculo posicion inicial
-	this.init(new Point(pos.x*Block.BLOCK_SIZE,pos.y*Block.BLOCK_SIZE),new Point((pos.x*Block.BLOCK_SIZE)+Block.BLOCK_SIZE,(pos.y*Block.BLOCK_SIZE)+Block.BLOCK_SIZE)); //Paso de cuadrado a pixeles
+	this.init(new Point(pos.x*Block.BLOCK_SIZE+Block.OUTLINE_WIDTH,pos.y*Block.BLOCK_SIZE+Block.OUTLINE_WIDTH),new Point((pos.x*Block.BLOCK_SIZE+Block.OUTLINE_WIDTH)+Block.BLOCK_SIZE,(pos.y*Block.BLOCK_SIZE+Block.OUTLINE_WIDTH)+Block.BLOCK_SIZE)); //Paso de cuadrado a pixeles
 	this.color=color;
 	this.lineWidth=Block.OUTLINE_WIDTH;
 
