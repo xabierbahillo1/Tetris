@@ -98,6 +98,11 @@ Shape.prototype.draw = function() {
 		this.blockList[i].draw();
 	}
 };
+// Por ahora, siempre devolverá true
+
+Shape.prototype.can_move = function(board, dx, dy) {
+	return true;
+};
 
 // ============= I_Shape ================================
 function I_Shape(center) {
@@ -209,5 +214,75 @@ function Z_Shape(center) {
 Z_Shape.prototype = new Shape();
 Z_Shape.prototype.constructor = Shape;
 
+// ************************************
+// *     EJERCICIO 3               *
+// ************************************
+
+// ====================== BOARD ================
+
+function Board(width, height) {
+	this.width = width;
+	this.height = height;
+}
+
+// Si la pieza nueva puede entrar en el tablero, pintarla y devolver true.
+// Si no, devoler false
+
+Board.prototype.draw_shape = function(shape){
+	if (shape.can_move(this,0,0)){
+		shape.draw();
+		return true;
+	}
+	return false;
+}
+
+
+// En esta parte de la práctica devolveremos siempre 'true'
+// pero, más adelante, tendremos que implementar este método
+// que toma como parámetro la posición (x,y) de una casilla
+// (a la que queremos mover una pieza) e indica si es posible
+// ese movimiento o no (porque ya está ocupada o porque se sale
+// de los límites del tablero)
+
+Board.prototype.can_move = function(x,y){
+	return true;
+}
+
+// ==================== Tetris ==========================
+
+function Tetris() {
+	this.board = new Board(Tetris.BOARD_WIDTH, Tetris.BOARD_HEIGHT);
+}
+
+Tetris.SHAPES = [I_Shape, J_Shape, L_Shape, O_Shape, S_Shape, T_Shape, Z_Shape];
+Tetris.DIRECTION = {'Left':[-1, 0], 'Right':[1, 0], 'Down':[0, 1]};
+Tetris.BOARD_WIDTH = 10;
+Tetris.BOARD_HEIGHT = 20;
+Tetris.BOARD_COLOR='ivory';
+
+Tetris.prototype.create_new_shape = function(){
+
+	// TU CÓDIGO AQUÍ:
+	// Elegir un nombre de pieza al azar del array Tetris.SHAPES
+	// Crear una instancia de ese tipo de pieza (x = centro del tablero, y = 0)
+	// Devolver la referencia de esa pieza nueva
+
+	var index= Math.floor(Math.random() * Tetris.SHAPES.length); //Obtengo un indice aleatorio para sacar la pieza al azar
+	var tetronimo= Tetris.SHAPES[index];
+	return new tetronimo(new Point(Tetris.BOARD_WIDTH/2,0));
+}
+
+Tetris.prototype.init = function(){
+
+	// Obtener una nueva pieza al azar y asignarla como pieza actual
+
+	this.current_shape = this.create_new_shape()
+
+	// TU CÓDIGO AQUÍ:
+	// Pintar la pieza actual en el tablero
+	// Aclaración: (Board tiene un método para pintar)
+	this.board.draw_shape(this.current_shape);
+
+}
 
 
