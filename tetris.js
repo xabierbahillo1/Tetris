@@ -28,16 +28,10 @@ Rectangle.prototype.draw = function() {
 	// la anchura y altura actual y una línea de anchura=lineWidth. Ten en cuenta que 
 	// en este ejemplo la variable ctx es global y que guarda el contexto (context) 
 	// para pintar en el canvas.
-	ctx.beginPath();
-	ctx.moveTo(this.px,this.py);
-	ctx.lineTo(this.px+this.width,this.py);
-	ctx.lineTo(this.px+this.width,this.py+this.height);
-	ctx.lineTo(this.px,this.py+this.height);
-	ctx.closePath();
+	ctx.fillStyle = this.color;
+	ctx.fillRect(this.px,this.py,this.width,this.height);
 	ctx.lineWidth = this.lineWidth;
-	ctx.stroke();
-	ctx.fillStyle= this.color;
-	ctx.fill();
+	ctx.strokeRect(this.px,this.py,this.width,this.height);
 }
 
 
@@ -58,9 +52,9 @@ function Block (pos, color) {
 	// para establecer la anchura del bloque y la anchura de la línea.
 
 	//Calculo posicion inicial
-	this.init(new Point(pos.x*Block.BLOCK_SIZE+Block.OUTLINE_WIDTH+1,pos.y*Block.BLOCK_SIZE+Block.OUTLINE_WIDTH+1),new Point((pos.x*Block.BLOCK_SIZE)+Block.BLOCK_SIZE,(pos.y*Block.BLOCK_SIZE)+Block.BLOCK_SIZE)); //Paso de cuadrado a pixeles
+	this.init(new Point(pos.x*Block.BLOCK_SIZE,pos.y*Block.BLOCK_SIZE),new Point((pos.x*Block.BLOCK_SIZE)+Block.BLOCK_SIZE,(pos.y*Block.BLOCK_SIZE)+Block.BLOCK_SIZE)); //Paso de cuadrado a pixeles
 	this.color=color;
-	this.lineWidth=Block.OUTLINE_WIDTH*2;
+	this.lineWidth=Block.OUTLINE_WIDTH;
 
 	//Canvas de 150x150  --> 10x20 -> 20x30=
 }
