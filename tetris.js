@@ -58,9 +58,9 @@ function Block (pos, color) {
 	// para establecer la anchura del bloque y la anchura de la línea.
 
 	//Calculo posicion inicial
-	this.init(new Point(pos.x*Block.BLOCK_SIZE,pos.y*Block.BLOCK_SIZE),new Point((pos.x*Block.BLOCK_SIZE)+Block.BLOCK_SIZE,(pos.y*Block.BLOCK_SIZE)+Block.BLOCK_SIZE)); //Paso de cuadrado a pixeles
+	this.init(new Point(pos.x*Block.BLOCK_SIZE+Block.OUTLINE_WIDTH+1,pos.y*Block.BLOCK_SIZE+Block.OUTLINE_WIDTH+1),new Point((pos.x*Block.BLOCK_SIZE)+Block.BLOCK_SIZE,(pos.y*Block.BLOCK_SIZE)+Block.BLOCK_SIZE)); //Paso de cuadrado a pixeles
 	this.color=color;
-	this.lineWidth=Block.OUTLINE_WIDTH;
+	this.lineWidth=Block.OUTLINE_WIDTH*2;
 
 	//Canvas de 150x150  --> 10x20 -> 20x30=
 }
