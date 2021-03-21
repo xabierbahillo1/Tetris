@@ -389,7 +389,7 @@ Tetris.prototype.key_pressed = function(e) {
 	// en la variable key se guardará el código ASCII de la tecla que
 	// ha pulsado el usuario. ¿Cuál es el código key que corresponde
 	// a mover la pieza hacia la izquierda, la derecha, abajo o a rotarla?
-	//console.log(key);
+	console.log(key);
 	if (key==37){
 		this.do_move("Left");
 	}
@@ -399,12 +399,20 @@ Tetris.prototype.key_pressed = function(e) {
 	if (key==40){
 		this.do_move("Down");
 	}
-
+	// TU CÓDIGO AQUÍ: Añadir una condición para que si el jugador pulsa la tecla "Espacio", la pieza caiga en picado
+	if (key==32){
+		var dx=Tetris.DIRECTION["Down"][0];
+		var dy=Tetris.DIRECTION["Down"][1];
+		while (this.current_shape.can_move(this.board,dx,dy)){ //Mientras se pueda mover hacia abajo muevo
+			this.do_move("Down");
+		}
+		this.do_move("Down"); //Muevo una vez mas para que saque la siguiente pieza
+	}
 	//Rotar: 38
 	//Izquierda: 37
 	//Derecha: 39
 	//Abajo: 40
-
+	//Barra espaciadora: 32
 
 }
 
