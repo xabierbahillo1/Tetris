@@ -58,7 +58,6 @@ Rectangle.prototype.setLineWidth = function(width) { this.lineWidth=width}
 Rectangle.prototype.setFill = function(color) { this.color = color}
 
 
-
 // ============== Block ===============================
 
 function Block (pos, color) {
@@ -88,12 +87,18 @@ Block.OUTLINE_WIDTH = 2;
 Block.prototype = new Rectangle();
 Block.prototype.constructor=Block;
 
+/**************************************************
+ *	 Código que se da dado para el EJERCICIO 5 *
+ ***************************************************/
+
 Block.prototype.can_move = function(board, dx, dy) {
 	// TU CÓDIGO AQUÍ: toma como parámetro un increment (dx,dy)
 	// e indica si es posible mover el bloque actual si
 	// incrementáramos su posición en ese valor
 	return board.can_move(this.x+dx,this.y+dy);
 }
+
+/** Método introducido en el EJERCICIO 4 */
 
 // ESTE CÓDIGO VIENE YA PROGRAMADO
 Block.prototype.move = function(dx, dy) {
@@ -102,7 +107,6 @@ Block.prototype.move = function(dx, dy) {
 
 	Rectangle.prototype.move.call(this, dx * Block.BLOCK_SIZE, dy * Block.BLOCK_SIZE);
 }
-
 
 
 // ************************************
@@ -134,7 +138,10 @@ Shape.prototype.draw = function() {
 		this.blocks[i].draw();
 	}
 };
-// Por ahora, siempre devolverá true
+
+/**************************************************
+ *	 Código que se da dado para el EJERCICIO 5 *
+ ***************************************************/
 
 Shape.prototype.can_move = function(board, dx, dy) {
 	// TU CÓDIGO AQUÍ: comprobar límites para cada bloque de la pieza
@@ -281,10 +288,24 @@ Z_Shape.prototype.constructor = Shape;
 function Board(width, height) {
 	this.width = width;
 	this.height = height;
+	this.grid = {}; /* 6. Estructura de datos introducida en el EJERCICIO 6 */
 }
 
 // Si la pieza nueva puede entrar en el tablero, pintarla y devolver true.
 // Si no, devoler false
+/*****************************
+ *	 EJERCICIO 6          *
+ *****************************/
+
+Board.prototype.add_shape = function(shape){
+
+	// TU CÓDIGO AQUÍ: meter todos los bloques de la pieza que hemos recibido por parámetro en la estructura de datos grid
+	for (block of shape.blocks) {
+		var clave=block.x+","+block.y;
+		this.grid[clave]=block;
+	}
+
+}
 
 Board.prototype.draw_shape = function(shape){
 	if (shape.can_move(this,0,0)){
@@ -294,13 +315,9 @@ Board.prototype.draw_shape = function(shape){
 	return false;
 }
 
-
-// En esta parte de la práctica devolveremos siempre 'true'
-// pero, más adelante, tendremos que implementar este método
-// que toma como parámetro la posición (x,y) de una casilla
-// (a la que queremos mover una pieza) e indica si es posible
-// ese movimiento o no (porque ya está ocupada o porque se sale
-// de los límites del tablero)
+// ****************************
+// *     EJERCICIO 5          *
+// ****************************
 
 Board.prototype.can_move = function(x,y){
 	// TU CÓDIGO AQUÍ:
@@ -335,12 +352,12 @@ Tetris.prototype.create_new_shape = function(){
 	// Crear una instancia de ese tipo de pieza (x = centro del tablero, y = 0)
 	// Devolver la referencia de esa pieza nueva
 
-	//var index= Math.floor(Math.random() * Tetris.SHAPES.length); //Obtengo un indice aleatorio para sacar la pieza al azar
-	//var tetronimo= Tetris.SHAPES[index];
-	//return new tetronimo(new Point(Tetris.BOARD_WIDTH/2,0));
+	var index= Math.floor(Math.random() * Tetris.SHAPES.length); //Obtengo un indice aleatorio para sacar la pieza al azar
+	var tetronimo= Tetris.SHAPES[index];
+	return new tetronimo(new Point(Tetris.BOARD_WIDTH/2,0));
 
 	//Modificado temporalmente para devolver un S_shape
-	return new S_Shape(new Point(Tetris.BOARD_WIDTH/2,0));
+	//return new S_Shape(new Point(Tetris.BOARD_WIDTH/2,0));
 }
 
 Tetris.prototype.init = function(){
@@ -348,7 +365,6 @@ Tetris.prototype.init = function(){
 	/**************
 	 EJERCICIO 4
 	 ***************/
-
 
 
 	// Obtener una nueva pieza al azar y asignarla como pieza actual
@@ -359,10 +375,9 @@ Tetris.prototype.init = function(){
 	// Pintar la pieza actual en el tablero
 	// Aclaración: (Board tiene un método para pintar)
 	this.board.draw_shape(this.current_shape);
-
 	// gestor de teclado
-
 	document.addEventListener('keydown', this.key_pressed.bind(this), false);
+
 
 }
 
@@ -384,10 +399,13 @@ Tetris.prototype.key_pressed = function(e) {
 	if (key==40){
 		this.do_move("Down");
 	}
+
 	//Rotar: 38
 	//Izquierda: 37
 	//Derecha: 39
 	//Abajo: 40
+
+
 }
 
 Tetris.prototype.do_move = function(direction) {
@@ -404,5 +422,11 @@ Tetris.prototype.do_move = function(direction) {
 	if (this.current_shape.can_move(this.board,dx,dy)){
 		this.current_shape.move(dx,dy);
 	}
-
+	/* Código que se pide en el EJERCICIO 6 */
+	 else if(direction=='Down'){
+	 	this.board.add_shape(this.current_shape);
+		this.current_shape = this.create_new_shape()
+		this.board.draw_shape(this.current_shape);
+	}
+	// TU CÓDIGO AQUÍ: añade la pieza actual al grid. Crea una nueva pieza y dibújala en el tablero.
 }
