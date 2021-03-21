@@ -80,13 +80,19 @@ function Block (pos, color) {
 	this.init(new Point(newx,newy),new Point(newx+Block.BLOCK_SIZE,newy+Block.BLOCK_SIZE)); //Paso de cuadrado a pixeles
 	this.color=color;
 	this.lineWidth=Block.OUTLINE_WIDTH;
-
-
-	//Canvas de 150x150  --> 10x20 -> 20x30=
 }
+Block.BLOCK_SIZE = 30;
+Block.OUTLINE_WIDTH = 2;
+
+// TU CÓDIGO: emplea el patrón de herencia (Block es un Rectangle)
+Block.prototype = new Rectangle();
+Block.prototype.constructor=Block;
 
 Block.prototype.can_move = function(board, dx, dy) {
-	return true;
+	// TU CÓDIGO AQUÍ: toma como parámetro un increment (dx,dy)
+	// e indica si es posible mover el bloque actual si
+	// incrementáramos su posición en ese valor
+	return board.can_move(this.x+dx,this.y+dy);
 }
 
 // ESTE CÓDIGO VIENE YA PROGRAMADO
@@ -97,12 +103,7 @@ Block.prototype.move = function(dx, dy) {
 	Rectangle.prototype.move.call(this, dx * Block.BLOCK_SIZE, dy * Block.BLOCK_SIZE);
 }
 
-Block.BLOCK_SIZE = 30;
-Block.OUTLINE_WIDTH = 2;
 
-// TU CÓDIGO: emplea el patrón de herencia (Block es un Rectangle)
-Block.prototype = new Rectangle();
-Block.prototype.constructor=Block;
 
 // ************************************
 // *      EJERCICIO 2                  *
@@ -136,6 +137,15 @@ Shape.prototype.draw = function() {
 // Por ahora, siempre devolverá true
 
 Shape.prototype.can_move = function(board, dx, dy) {
+	// TU CÓDIGO AQUÍ: comprobar límites para cada bloque de la pieza
+	for (var i=0;i<this.blocks.length;i++){ //Por cada bloque miro si se puede mover
+		for (block of this.blocks) {
+			if (!block.can_move(board,dx,dy)){
+				return false;
+			}
+		}
+	}
+	//Si llego a este punto todos se pueden mover, devuelvo true
 	return true;
 };
 
@@ -293,7 +303,17 @@ Board.prototype.draw_shape = function(shape){
 // de los límites del tablero)
 
 Board.prototype.can_move = function(x,y){
-	return true;
+	// TU CÓDIGO AQUÍ:
+	// hasta ahora, este método siempre devolvía el valor true. Ahora,
+	// comprueba si la posición que se le pasa como párametro está dentro de los
+	// límites del tablero y en función de ello, devuelve true o false.
+	if (x>=0 && x<this.width && y>=0 && y<this.height){
+		return true;
+	}
+	else{
+		return false;
+	}
+
 }
 
 // ==================== Tetris ==========================
@@ -354,7 +374,7 @@ Tetris.prototype.key_pressed = function(e) {
 	// en la variable key se guardará el código ASCII de la tecla que
 	// ha pulsado el usuario. ¿Cuál es el código key que corresponde
 	// a mover la pieza hacia la izquierda, la derecha, abajo o a rotarla?
-	console.log(key);
+	//console.log(key);
 	if (key==37){
 		this.do_move("Left");
 	}
@@ -381,7 +401,7 @@ Tetris.prototype.do_move = function(direction) {
 	var direccion=Tetris.DIRECTION[direction]
 	var dx=direccion[0];
 	var dy=direccion[1];
-	if (this.current_shape.can_move(dx,dy)){
+	if (this.current_shape.can_move(this.board,dx,dy)){
 		this.current_shape.move(dx,dy);
 	}
 
