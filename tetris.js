@@ -6,7 +6,7 @@
 
 function Point (x, y) {
 	this.x = x;
-	this.y = y;    
+	this.y = y;
 }
 
 // ============== Rectangle ====================
@@ -31,12 +31,33 @@ Rectangle.prototype.draw = function() {
 	ctx.fillStyle = this.color;
 	ctx.fillRect(this.px,this.py,this.width,this.height);
 	ctx.lineWidth = this.lineWidth;
+	ctx.strokeStyle= 'black'; //Linea de borde negra
 	ctx.strokeRect(this.px,this.py,this.width,this.height);
 }
+//** Método introducido en el EJERCICIO 4 */
+Rectangle.prototype.move = function(x,y){
+	this.px += x;
+	this.py += y;
+	this.draw();
+}
 
+//** Método introducido en el EJERCICIO 4 */
+
+Rectangle.prototype.erase = function(){
+	ctx.beginPath();
+	ctx.lineWidth = this.lineWidth+2;
+	ctx.strokeStyle = Tetris.BOARD_COLOR;
+	ctx.rect(this.px, this.py, this.width, this.height);
+	ctx.stroke();
+	ctx.fillStyle = Tetris.BOARD_COLOR;
+	ctx.fill()
+
+}
 
 Rectangle.prototype.setLineWidth = function(width) { this.lineWidth=width}
 Rectangle.prototype.setFill = function(color) { this.color = color}
+
+
 
 // ============== Block ===============================
 
@@ -52,22 +73,36 @@ function Block (pos, color) {
 	// para establecer la anchura del bloque y la anchura de la línea.
 
 	//Calculo posicion inicial
-
-	this.init(new Point(pos.x*Block.BLOCK_SIZE+Block.OUTLINE_WIDTH,pos.y*Block.BLOCK_SIZE+Block.OUTLINE_WIDTH),new Point((pos.x*Block.BLOCK_SIZE+Block.OUTLINE_WIDTH)+Block.BLOCK_SIZE,(pos.y*Block.BLOCK_SIZE+Block.OUTLINE_WIDTH)+Block.BLOCK_SIZE)); //Paso de cuadrado a pixeles
+	this.x=pos.x;
+	this.y=pos.y;
+	var newx=pos.x*Block.BLOCK_SIZE+Block.OUTLINE_WIDTH;
+	var newy=pos.y*Block.BLOCK_SIZE+Block.OUTLINE_WIDTH;
+	this.init(new Point(newx,newy),new Point(newx+Block.BLOCK_SIZE,newy+Block.BLOCK_SIZE)); //Paso de cuadrado a pixeles
 	this.color=color;
 	this.lineWidth=Block.OUTLINE_WIDTH;
 
 
 	//Canvas de 150x150  --> 10x20 -> 20x30=
 }
-Block.prototype = new Rectangle();
-Block.prototype.constructor=Block;
 
+Block.prototype.can_move = function(board, dx, dy) {
+	return true;
+}
+
+// ESTE CÓDIGO VIENE YA PROGRAMADO
+Block.prototype.move = function(dx, dy) {
+	this.x += dx;
+	this.y += dy;
+
+	Rectangle.prototype.move.call(this, dx * Block.BLOCK_SIZE, dy * Block.BLOCK_SIZE);
+}
 
 Block.BLOCK_SIZE = 30;
 Block.OUTLINE_WIDTH = 2;
 
 // TU CÓDIGO: emplea el patrón de herencia (Block es un Rectangle)
+Block.prototype = new Rectangle();
+Block.prototype.constructor=Block;
 
 // ************************************
 // *      EJERCICIO 2                  *
@@ -84,9 +119,9 @@ Shape.prototype.init = function(coords, color) {
 	// Toma como parámetros: coords, un array de posiciones de los bloques
 	// que forman la Pieza y color, un string que indica el color de los bloques
 	// Post-condición: para cada coordenada, crea un bloque de ese color y lo guarda en un bloque-array.
-	this.blockList=[];
+	this.blocks=[];
 	for (var i=0; i<coords.length;i++){
-		this.blockList[i]=new Block(coords[i],color);
+		this.blocks[i]=new Block(coords[i],color);
 	}
 };
 
@@ -94,14 +129,27 @@ Shape.prototype.draw = function() {
 
 	// TU CÓDIGO AQUÍ: método que debe pintar en pantalla todos los bloques
 	// que forman la Pieza
-	for (var i=0;i<this.blockList.length;i++){
-		this.blockList[i].draw();
+	for (var i=0;i<this.blocks.length;i++){
+		this.blocks[i].draw();
 	}
 };
 // Por ahora, siempre devolverá true
 
 Shape.prototype.can_move = function(board, dx, dy) {
 	return true;
+};
+
+/** Método creado en el EJERCICIO 4 */
+
+Shape.prototype.move = function(dx, dy) {
+
+	for (block of this.blocks) {
+		block.erase();
+	}
+
+	for (block of this.blocks) {
+		block.move(dx,dy);
+	}
 };
 
 // ============= I_Shape ================================
@@ -258,7 +306,7 @@ Tetris.SHAPES = [I_Shape, J_Shape, L_Shape, O_Shape, S_Shape, T_Shape, Z_Shape];
 Tetris.DIRECTION = {'Left':[-1, 0], 'Right':[1, 0], 'Down':[0, 1]};
 Tetris.BOARD_WIDTH = 10;
 Tetris.BOARD_HEIGHT = 20;
-Tetris.BOARD_COLOR='ivory';
+Tetris.BOARD_COLOR='white';
 
 Tetris.prototype.create_new_shape = function(){
 
@@ -267,12 +315,21 @@ Tetris.prototype.create_new_shape = function(){
 	// Crear una instancia de ese tipo de pieza (x = centro del tablero, y = 0)
 	// Devolver la referencia de esa pieza nueva
 
-	var index= Math.floor(Math.random() * Tetris.SHAPES.length); //Obtengo un indice aleatorio para sacar la pieza al azar
-	var tetronimo= Tetris.SHAPES[index];
-	return new tetronimo(new Point(Tetris.BOARD_WIDTH/2,0));
+	//var index= Math.floor(Math.random() * Tetris.SHAPES.length); //Obtengo un indice aleatorio para sacar la pieza al azar
+	//var tetronimo= Tetris.SHAPES[index];
+	//return new tetronimo(new Point(Tetris.BOARD_WIDTH/2,0));
+
+	//Modificado temporalmente para devolver un S_shape
+	return new S_Shape(new Point(Tetris.BOARD_WIDTH/2,0));
 }
 
 Tetris.prototype.init = function(){
+
+	/**************
+	 EJERCICIO 4
+	 ***************/
+
+
 
 	// Obtener una nueva pieza al azar y asignarla como pieza actual
 
@@ -283,6 +340,49 @@ Tetris.prototype.init = function(){
 	// Aclaración: (Board tiene un método para pintar)
 	this.board.draw_shape(this.current_shape);
 
+	// gestor de teclado
+
+	document.addEventListener('keydown', this.key_pressed.bind(this), false);
+
 }
 
+Tetris.prototype.key_pressed = function(e) {
 
+	var key = e.keyCode ? e.keyCode : e.which;
+
+	// TU CÓDIGO AQUÍ:
+	// en la variable key se guardará el código ASCII de la tecla que
+	// ha pulsado el usuario. ¿Cuál es el código key que corresponde
+	// a mover la pieza hacia la izquierda, la derecha, abajo o a rotarla?
+	console.log(key);
+	if (key==37){
+		this.do_move("Left");
+	}
+	if (key==39){
+		this.do_move("Right");
+	}
+	if (key==40){
+		this.do_move("Down");
+	}
+	//Rotar: 38
+	//Izquierda: 37
+	//Derecha: 39
+	//Abajo: 40
+}
+
+Tetris.prototype.do_move = function(direction) {
+
+	// TU CÓDIGO AQUÍ: el usuario ha pulsado la tecla Left, Right o Down (izquierda,
+	// derecha o abajo). Tenemos que mover la pieza en la dirección correspondiente
+	// a esa tecla. Recuerda que el array Tetris.DIRECTION guarda los desplazamientos
+	// en cada dirección, por tanto, si accedes a Tetris.DIRECTION[direction],
+	// obtendrás el desplazamiento (dx, dy). A continuación analiza si la pieza actual
+	// se puede mover con ese desplazamiento. En caso afirmativo, mueve la pieza.
+	var direccion=Tetris.DIRECTION[direction]
+	var dx=direccion[0];
+	var dy=direccion[1];
+	if (this.current_shape.can_move(dx,dy)){
+		this.current_shape.move(dx,dy);
+	}
+
+}
