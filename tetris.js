@@ -324,12 +324,16 @@ Board.prototype.can_move = function(x,y){
 	// hasta ahora, este método siempre devolvía el valor true. Ahora,
 	// comprueba si la posición que se le pasa como párametro está dentro de los
 	// límites del tablero y en función de ello, devuelve true o false.
-	if (x>=0 && x<this.width && y>=0 && y<this.height){
-		return true;
+	if (x>=0 && x<this.width && y>=0 && y<this.height){ //Esta dentro de los limites del tablero
+		//Detecto colisiones
+		/* EJERCICIO 7 */
+		// TU CÓDIGO AQUÍ: código para detectar colisiones. Si la posición x,y está en el diccionario grid, devolver false y true en cualquier otro caso.
+		return !([x,y] in this.grid); //Devuelvo true si no esta, devuelvo false si esta
 	}
 	else{
 		return false;
 	}
+
 
 }
 
