@@ -467,6 +467,7 @@ Tetris.DIRECTION = {'Left':[-1, 0], 'Right':[1, 0], 'Down':[0, 1]};
 Tetris.BOARD_WIDTH = 10;
 Tetris.BOARD_HEIGHT = 20;
 Tetris.BOARD_COLOR='white';
+Tetris.GAME_OVER=false;
 
 Tetris.prototype.create_new_shape = function(){
 
@@ -550,26 +551,36 @@ Tetris.prototype.do_move = function(direction) {
 	// en cada dirección, por tanto, si accedes a Tetris.DIRECTION[direction],
 	// obtendrás el desplazamiento (dx, dy). A continuación analiza si la pieza actual
 	// se puede mover con ese desplazamiento. En caso afirmativo, mueve la pieza.
-	var direccion=Tetris.DIRECTION[direction]
-	var dx=direccion[0];
-	var dy=direccion[1];
-	if (this.current_shape.can_move(this.board,dx,dy)){
-		this.current_shape.move(dx,dy);
-	}
-	/* Código que se pide en el EJERCICIO 6 */
-	 else if(direction=='Down'){
-	 	this.board.add_shape(this.current_shape);
-	 	this.board.remove_complete_rows(); //Miro si hay alguna fila para eliminar
-	 	if (this.board.can_move(this.board.width/2,0)){ //Si se puede añadir
-	 		//Añado la nueva pieza
-			this.current_shape = this.create_new_shape()
-			this.board.draw_shape(this.current_shape);
+	if (!Tetris.GAME_OVER) {
+		var direccion = Tetris.DIRECTION[direction]
+		var dx = direccion[0];
+		var dy = direccion[1];
+		if (this.current_shape.can_move(this.board, dx, dy)) {
+			this.current_shape.move(dx, dy);
 		}
-	 	else{ //Si no, game over
-	 		clearInterval(this.timer);
-			alert("Game over");
-		}
+		/* Código que se pide en el EJERCICIO 6 */
+		else if (direction == 'Down') {
+			this.board.add_shape(this.current_shape);
+			this.board.remove_complete_rows(); //Miro si hay alguna fila para eliminar
+			if (this.board.can_move(this.board.width / 2, 0)) { //Si se puede añadir
+				//Añado la nueva pieza
+				this.current_shape = this.create_new_shape()
+				this.board.draw_shape(this.current_shape);
+			} else { //Si no, game over
+				Tetris.GAME_OVER=true;
+				clearInterval(this.timer); //Paro el reloj
+				//Dibujo el mensaje de game-over
+				notctx.fillStyle = "Black"; //cuadrado negro
+				notctx.fillRect(25, 200, 250, 100);
+				notcanvas.style = "display"; //muestro el canvas
+				notctx.font = "bold 42px fantasy"; //estilo de texto
+				notctx.fillStyle="red";
+				notctx.textAlign = "center";
+				notctx.strokeText("Game over!!", 150, 265);
+				notctx.fillText("Game over!!", 150, 265);
+			}
 
+		}
 	}
 	// TU CÓDIGO AQUÍ: añade la pieza actual al grid. Crea una nueva pieza y dibújala en el tablero.
 }

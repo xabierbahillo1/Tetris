@@ -7,7 +7,7 @@
 </head>
 <body>
     <canvas id="canvas" width="300" height="600"></canvas>
-
+    <canvas id="notcanvas" width="300" height="600" style="display:none"></canvas>
 <script>
 // ===== main ====
 // canvas related variables
@@ -21,6 +21,8 @@ ctx.fillRect(0,0,canvas.width,canvas.height);
 var game = new Tetris();
 game.init();
 
+var notcanvas = document.getElementById("notcanvas");
+var notctx = canvas.getContext("2d");
 </script>
 </body>
 </html>
