@@ -1,3 +1,7 @@
+//Variable global que guarda la puntuacion actual
+var puntuacion=0;
+
+
 // ************************************
 // *     EJERCICIO 1                   *
 // ************************************
@@ -449,11 +453,35 @@ Board.prototype.move_down_rows = function(y_start){
 
 Board.prototype.remove_complete_rows = function(){
 // TU CÓDIGO AQUÍ:
+	var lineasSeguidas=0; //Contador de las lineas que llevo seguidas
+
 	for (var y=0;y<this.height;y++){ // Para toda fila y del tablero
 		if (this.is_row_complete(y)){ // si la fila y está completa
+			//Linea, sumo 10 puntos * Nº lineas seguidas
+			lineasSeguidas++;
 			this.delete_row(y); //borrar fila y
 			this.move_down_rows(y-1); //mover hacia abajo las filas superiores (es decir, move_down_rows(y-1) )
 		}
+	}
+	if (lineasSeguidas>0){ //He hecho al menos una linea, actualizo puntuacion
+		puntuacion=puntuacion+(10*lineasSeguidas);
+		if (lineasSeguidas==4) {
+			document.getElementById("puntuacion").innerHTML=puntuacion+ " Tetris!!!"; //Muestro la nueva puntuacion junto con mensaje de tetris
+			setTimeout(function() { //A los 3 segundos borro el mensaje tetris
+				document.getElementById("puntuacion").innerHTML=puntuacion;
+			},3000);
+		}
+		else if (lineasSeguidas>1){
+			document.getElementById("puntuacion").innerHTML=puntuacion+ " "+lineasSeguidas+" filas seguidas!!!"; //Muestro la nueva puntuacion junto con las filas eliminadas
+			setTimeout(function() { //A los 3 segundos borro el mensaje
+				document.getElementById("puntuacion").innerHTML=puntuacion;
+			},3000);
+		}
+		else{
+			document.getElementById("puntuacion").innerHTML=puntuacion //Muestro la puntuacion
+		}
+		//Gestiono aumento de dificultad
+
 	}
 };
 // ==================== Tetris ==========================
@@ -552,6 +580,21 @@ Tetris.prototype.do_move = function(direction) {
 	// obtendrás el desplazamiento (dx, dy). A continuación analiza si la pieza actual
 	// se puede mover con ese desplazamiento. En caso afirmativo, mueve la pieza.
 	if (!Tetris.GAME_OVER) {
+
+		//Gestion de la dificultad en funcion de la puntuacion
+		if (puntuacion>=100 && puntuacion<200){ //Si puntuacion entre 100 y 200, nivel 2
+			this.reanimate_shape(700);
+			document.getElementById("nivel").innerHTML=2;
+		}
+		if (puntuacion>=200 && puntuacion<300){ //Si puntuacion mayor de 200 y menor de 300, nivel 3
+			this.reanimate_shape(500);
+			document.getElementById("nivel").innerHTML=3;
+		}
+		if (puntuacion>=300){ //Si puntuacion mayor de 300, nivel 4
+			this.reanimate_shape(400);
+			document.getElementById("nivel").innerHTML=4;
+		}
+		//Gestion del movimiento
 		var direccion = Tetris.DIRECTION[direction]
 		var dx = direccion[0];
 		var dy = direccion[1];
@@ -592,7 +635,12 @@ Tetris.prototype.do_rotate = function(){
 		this.current_shape.rotate();
 	}
 }
-Tetris.prototype.animate_shape = function(){
 // TU CÓDIGO AQUÍ: genera un timer que mueva hacia abajo la pieza actual cada segundo
+Tetris.prototype.animate_shape = function(){
 	this.timer = setInterval(function() {this.game.do_move("Down")}, 1000);
+}
+
+Tetris.prototype.reanimate_shape = function(timeout){
+	clearInterval(this.timer);
+	this.timer = setInterval(function() {this.game.do_move("Down")}, timeout);
 }
