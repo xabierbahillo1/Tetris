@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
    <title>Tetris</title>
    <link rel="stylesheet" href="tetris.css">
@@ -8,24 +8,36 @@
 <body>
     <p>
         <span> Nivel: </span> <span id="nivel">1</span>&nbsp&nbsp<span>Puntuacion: </span><span id="puntuacion">0</span>
+        <span style="position: absolute; left: 350px;"> Proxima pieza: </span>
     </p>
     <canvas id="canvas" width="300" height="600"></canvas>
     <canvas id="notcanvas" width="300" height="600" style="display:none"></canvas>
+    <canvas id="previewCanvas" width="180" height="130" style></canvas>
 <script>
 // ===== main ====
 // canvas related variables
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
-
 // clear the canvas
 ctx.fillStyle = 'white';
-ctx.fillRect(0,0,canvas.width,canvas.height); 
+ctx.fillRect(0,0,canvas.width,canvas.height);
+
+//canvas pieza preview
+var previewCanvas = document.getElementById("previewCanvas");
+var previewctx = previewCanvas.getContext("2d");
+// clear the canvas
+//previewctx.fillStyle = 'white';
+//previewctx.fillRect(0,0,previewctx.width,previewctx.height);
+
+
 
 var game = new Tetris();
 game.init();
 
 var notcanvas = document.getElementById("notcanvas");
 var notctx = canvas.getContext("2d");
+
+
 </script>
 </body>
 </html>

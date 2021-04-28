@@ -25,6 +25,17 @@ Rectangle.prototype.init = function(p1,p2) {
 	this.color = 'black';
 }
 
+Rectangle.prototype.drawPreview = function() {
+
+	// Pinta en el canvas preview
+
+	previewctx.fillStyle = this.color;
+	previewctx.fillRect(this.px,this.py,this.width,this.height);
+	previewctx.lineWidth = this.lineWidth;
+	previewctx.strokeStyle= 'black'; //Linea de borde negra
+	previewctx.strokeRect(this.px,this.py,this.width,this.height);
+}
+
 Rectangle.prototype.draw = function() {
 
 	// TU CÓDIGO AQUÍ:
@@ -38,6 +49,7 @@ Rectangle.prototype.draw = function() {
 	ctx.strokeStyle= 'black'; //Linea de borde negra
 	ctx.strokeRect(this.px,this.py,this.width,this.height);
 }
+
 //** Método introducido en el EJERCICIO 4 */
 Rectangle.prototype.move = function(x,y){
 	this.px += x;
@@ -135,7 +147,11 @@ Shape.prototype.init = function(coords, color) {
 	/*8 Atributo introducido en el EJERCICIO 8*/
 	this.rotation_dir = 1;
 };
-
+Shape.prototype.drawPreview = function (){
+	for (var i=0;i<this.blocks.length;i++){
+		this.blocks[i].drawPreview();
+	}
+}
 Shape.prototype.draw = function() {
 
 	// TU CÓDIGO AQUÍ: método que debe pintar en pantalla todos los bloques
@@ -383,6 +399,13 @@ Board.prototype.add_shape = function(shape){
 	}
 
 }
+Board.prototype.draw_shape_preview = function(shape){
+	//Borro lo que habia en el canvas
+	previewctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+	//Pinto la nueva pieza
+	shape.drawPreview();
+	return true;
+}
 
 Board.prototype.draw_shape = function(shape){
 	if (shape.can_move(this,0,0)){
@@ -496,6 +519,7 @@ Tetris.BOARD_WIDTH = 10;
 Tetris.BOARD_HEIGHT = 20;
 Tetris.BOARD_COLOR='white';
 Tetris.GAME_OVER=false;
+Tetris.PREVIEW_SHAPE;
 
 Tetris.prototype.create_new_shape = function(){
 
@@ -503,10 +527,27 @@ Tetris.prototype.create_new_shape = function(){
 	// Elegir un nombre de pieza al azar del array Tetris.SHAPES
 	// Crear una instancia de ese tipo de pieza (x = centro del tablero, y = 0)
 	// Devolver la referencia de esa pieza nueva
-
-	var index= Math.floor(Math.random() * Tetris.SHAPES.length); //Obtengo un indice aleatorio para sacar la pieza al azar
-	var tetronimo= Tetris.SHAPES[index];
-	return new tetronimo(new Point(Tetris.BOARD_WIDTH/2,0));
+	if (Tetris.PREVIEW_SHAPE==null){ //Si no tengo pieza preview, genero la preview y actual
+		//Creo la pieza preview
+		var index= Math.floor(Math.random() * Tetris.SHAPES.length); //Obtengo un indice aleatorio para sacar la pieza al azar
+		Tetris.PREVIEW_SHAPE= Tetris.SHAPES[index];
+		//Pinto pieza preview
+		this.board.draw_shape_preview(new Tetris.PREVIEW_SHAPE(new Point(2,1)));
+		//Creo la pieza actual
+		var index= Math.floor(Math.random() * Tetris.SHAPES.length); //Obtengo un indice aleatorio para sacar la pieza al azar
+		var tetronimo= Tetris.SHAPES[index];
+		return new tetronimo(new Point(Tetris.BOARD_WIDTH/2,0));
+	}
+	else { //Tengo pieza
+		tetronimo=Tetris.PREVIEW_SHAPE; //Obtengo la pieza preview
+		//Saco una nueva pieza para mostrar en preview
+		var index= Math.floor(Math.random() * Tetris.SHAPES.length); //Obtengo un indice aleatorio para sacar la pieza al azar
+		var tetronimoNuevo= Tetris.SHAPES[index];
+		Tetris.PREVIEW_SHAPE=tetronimoNuevo; //Guardo la siguiente pieza
+		//Pinto pieza preview
+		this.board.draw_shape_preview(new Tetris.PREVIEW_SHAPE(new Point(3,1)));
+		return new tetronimo(new Point(Tetris.BOARD_WIDTH/2,0)); //Devuelvo la pieza preview
+	}
 
 	//Modificado temporalmente para devolver un S_shape
 	//return new I_Shape(new Point(Tetris.BOARD_WIDTH/2,0));
@@ -527,6 +568,7 @@ Tetris.prototype.init = function(){
 	// Pintar la pieza actual en el tablero
 	// Aclaración: (Board tiene un método para pintar)
 	this.board.draw_shape(this.current_shape);
+
 	// gestor de teclado
 	document.addEventListener('keydown', this.key_pressed.bind(this), false);
 	// Crea el código del método Tetris.animate_shape (más abajo lo verás)
@@ -586,13 +628,17 @@ Tetris.prototype.do_move = function(direction) {
 			this.reanimate_shape(700);
 			document.getElementById("nivel").innerHTML=2;
 		}
-		if (puntuacion>=200 && puntuacion<300){ //Si puntuacion mayor de 200 y menor de 300, nivel 3
+		else if (puntuacion>=200 && puntuacion<300){ //Si puntuacion mayor de 200 y menor de 300, nivel 3
 			this.reanimate_shape(500);
 			document.getElementById("nivel").innerHTML=3;
 		}
-		if (puntuacion>=300){ //Si puntuacion mayor de 300, nivel 4
+		else if (puntuacion>=300 && puntuacion<400){ //Si puntuacion mayor de 300, nivel 4
 			this.reanimate_shape(400);
 			document.getElementById("nivel").innerHTML=4;
+		}
+		else if (puntuacion>=400){
+			this.reanimate_shape(300);
+			document.getElementById("nivel").innerHTML=5;
 		}
 		//Gestion del movimiento
 		var direccion = Tetris.DIRECTION[direction]
@@ -609,6 +655,7 @@ Tetris.prototype.do_move = function(direction) {
 				//Añado la nueva pieza
 				this.current_shape = this.create_new_shape()
 				this.board.draw_shape(this.current_shape);
+
 			} else { //Si no, game over
 				Tetris.GAME_OVER=true;
 				clearInterval(this.timer); //Paro el reloj

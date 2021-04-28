@@ -1,4 +1,8 @@
 #canvas {
     border:1px solid #000000;
 }
-
+#previewCanvas {
+    position: absolute;
+    left: 330px;
+    border:1px solid #000000;
+}
