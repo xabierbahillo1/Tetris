@@ -519,6 +519,8 @@ Tetris.BOARD_WIDTH = 10;
 Tetris.BOARD_HEIGHT = 20;
 Tetris.BOARD_COLOR='white';
 Tetris.GAME_OVER=false;
+Tetris.TIMEOUT=1000;
+Tetris.PAUSED=false;
 Tetris.PREVIEW_SHAPE;
 
 Tetris.prototype.create_new_shape = function(){
@@ -585,26 +587,41 @@ Tetris.prototype.key_pressed = function(e) {
 	// ha pulsado el usuario. ¿Cuál es el código key que corresponde
 	// a mover la pieza hacia la izquierda, la derecha, abajo o a rotarla?
 	console.log(key);
-	if (key==37){
-		this.do_move("Left");
-	}
-	if (key==39){
-		this.do_move("Right");
-	}
-	if (key==40){
-		this.do_move("Down");
-	}
-	// TU CÓDIGO AQUÍ: Añadir una condición para que si el jugador pulsa la tecla "Espacio", la pieza caiga en picado
-	if (key==32){
-		var dx=Tetris.DIRECTION["Down"][0];
-		var dy=Tetris.DIRECTION["Down"][1];
-		while (this.current_shape.can_move(this.board,dx,dy)){ //Mientras se pueda mover hacia abajo muevo
+	if (!Tetris.PAUSED) { //Si el juego no está pausado
+		if (key == 80) { //Pulsa P, pausa el juego
+			clearInterval(this.timer);
+			Tetris.PAUSED=true;
+			document.getElementById("juegoPausado").style="position: absolute;left: 330px; top: 200px; color:#FF0000; font-size:20px; display; ";
+		}
+
+		if (key == 37) {
+			this.do_move("Left");
+		}
+		if (key == 39) {
+			this.do_move("Right");
+		}
+		if (key == 40) {
 			this.do_move("Down");
 		}
-		this.do_move("Down"); //Muevo una vez mas para que saque la siguiente pieza
+		// TU CÓDIGO AQUÍ: Añadir una condición para que si el jugador pulsa la tecla "Espacio", la pieza caiga en picado
+		if (key == 32) {
+			var dx = Tetris.DIRECTION["Down"][0];
+			var dy = Tetris.DIRECTION["Down"][1];
+			while (this.current_shape.can_move(this.board, dx, dy)) { //Mientras se pueda mover hacia abajo muevo
+				this.do_move("Down");
+			}
+			this.do_move("Down"); //Muevo una vez mas para que saque la siguiente pieza
+		}
+		if (key == 38) {
+			this.do_rotate();
+		}
 	}
-	if (key==38){
-		this.do_rotate();
+	else{ //Juego pausado
+		if (key ==80 ) { //Pulsa P, retoma el juego
+			this.timer = setInterval(function() {this.game.do_move("Down")}, Tetris.TIMEOUT);
+			Tetris.PAUSED=false;
+			document.getElementById("juegoPausado").style="display:none";
+		}
 	}
 	//Rotar: 38
 	//Izquierda: 37intervalo javascript
@@ -625,19 +642,23 @@ Tetris.prototype.do_move = function(direction) {
 
 		//Gestion de la dificultad en funcion de la puntuacion
 		if (puntuacion>=100 && puntuacion<200){ //Si puntuacion entre 100 y 200, nivel 2
-			this.reanimate_shape(700);
+			Tetris.TIMEOUT=700; //Se guarda el tiempo para volver a ponerlo en el PAUSE
+			this.reanimate_shape(Tetris.TIMEOUT);
 			document.getElementById("nivel").innerHTML=2;
 		}
 		else if (puntuacion>=200 && puntuacion<300){ //Si puntuacion mayor de 200 y menor de 300, nivel 3
-			this.reanimate_shape(500);
+			Tetris.TIMEOUT=500;
+			this.reanimate_shape(Tetris.TIMEOUT);
 			document.getElementById("nivel").innerHTML=3;
 		}
 		else if (puntuacion>=300 && puntuacion<400){ //Si puntuacion mayor de 300, nivel 4
-			this.reanimate_shape(400);
+			Tetris.TIMEOUT=400;
+			this.reanimate_shape(Tetris.TIMEOUT);
 			document.getElementById("nivel").innerHTML=4;
 		}
 		else if (puntuacion>=400){
-			this.reanimate_shape(300);
+			Tetris.TIMEOUT=300;
+			this.reanimate_shape(Tetris.TIMEOUT);
 			document.getElementById("nivel").innerHTML=5;
 		}
 		//Gestion del movimiento
