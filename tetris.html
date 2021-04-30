@@ -15,6 +15,9 @@
     <canvas id="canvas" width="300" height="600"></canvas>
     <canvas id="notcanvas" width="300" height="600" style="display:none"></canvas>
     <canvas id="previewCanvas" width="180" height="130" style></canvas>
+
+    <input type="button" id="audio" class="audio" value="Audio">
+    <audio id="audiofondo" src="audio/musicaTetris.mp3">
 <script>
 // ===== main ====
 // canvas related variables
@@ -35,6 +38,9 @@ var previewctx = previewCanvas.getContext("2d");
 
 var game = new Tetris();
 game.init();
+
+var botonAudio = document.getElementById("audio");
+botonAudio.onclick=ponerAudioBackground;
 
 var notcanvas = document.getElementById("notcanvas");
 var notctx = canvas.getContext("2d");
