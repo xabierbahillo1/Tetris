@@ -1,6 +1,6 @@
 //Variable global que guarda la puntuacion actual
 var puntuacion=0;
-
+var audio = false; //Indica si esta reproduciendo la musica o no
 
 // ************************************
 // *     EJERCICIO 1                   *
@@ -481,6 +481,7 @@ Board.prototype.remove_complete_rows = function(){
 	for (var y=0;y<this.height;y++){ // Para toda fila y del tablero
 		if (this.is_row_complete(y)){ // si la fila y está completa
 			//Linea, sumo 10 puntos * Nº lineas seguidas
+			if (audio) {loadAudio("audio/sonidoLinea.mp3").then(function(audio){ audio.volume=0.4; audio.play(); });} //Efecto sonoro linea
 			lineasSeguidas++;
 			this.delete_row(y); //borrar fila y
 			this.move_down_rows(y-1); //mover hacia abajo las filas superiores (es decir, move_down_rows(y-1) )
@@ -590,8 +591,12 @@ Tetris.prototype.key_pressed = function(e) {
 	if (!Tetris.PAUSED) { //Si el juego no está pausado
 		if (key == 80) { //Pulsa P, pausa el juego
 			clearInterval(this.timer);
-			Tetris.PAUSED=true;
-			document.getElementById("juegoPausado").style="position: absolute;left: 330px; top: 200px; color:#FF0000; font-size:20px; display; ";
+			Tetris.PAUSED = true;
+			document.getElementById("juegoPausado").style = "position: absolute;left: 330px; top: 200px; color:#FF0000; font-size:20px; display; ";
+			if (audio){
+				document.getElementById("audiofondo").pause();
+			}
+			document.getElementById("audio").disabled=true;
 		}
 
 		if (key == 37) {
@@ -614,6 +619,7 @@ Tetris.prototype.key_pressed = function(e) {
 		}
 		if (key == 38) {
 			this.do_rotate();
+			if (audio) {loadAudio("audio/giroPieza.mp3").then(function(audio){ audio.volume=0.5; audio.play(); });} //Efecto sonoro giro pieza
 		}
 	}
 	else{ //Juego pausado
@@ -621,6 +627,10 @@ Tetris.prototype.key_pressed = function(e) {
 			this.timer = setInterval(function() {this.game.do_move("Down")}, Tetris.TIMEOUT);
 			Tetris.PAUSED=false;
 			document.getElementById("juegoPausado").style="display:none";
+			if (audio) {
+				document.getElementById("audiofondo").play();
+			}
+			document.getElementById("audio").disabled=false;
 		}
 	}
 	//Rotar: 38
@@ -670,6 +680,7 @@ Tetris.prototype.do_move = function(direction) {
 		}
 		/* Código que se pide en el EJERCICIO 6 */
 		else if (direction == 'Down') {
+			if (audio) {loadAudio("audio/piezaClic.mp3").then( audio => audio.play());} //Efecto sonoro cuando colocas una pieza
 			this.board.add_shape(this.current_shape);
 			this.board.remove_complete_rows(); //Miro si hay alguna fila para eliminar
 			if (this.board.can_move(this.board.width / 2, 0)) { //Si se puede añadir
@@ -689,6 +700,12 @@ Tetris.prototype.do_move = function(direction) {
 				notctx.textAlign = "center";
 				notctx.strokeText("Game over!!", 150, 265);
 				notctx.fillText("Game over!!", 150, 265);
+				if (audio) {
+					document.getElementById("audiofondo").pause();
+					if (audio) {loadAudio("audio/gameOver.mp3").then(function(audio){ audio.volume=0.5; audio.play(); });} //Efecto sonoro game over
+					audio=false;
+				}
+				document.getElementById("audio").disabled=true;
 			}
 
 		}
@@ -711,4 +728,24 @@ Tetris.prototype.animate_shape = function(){
 Tetris.prototype.reanimate_shape = function(timeout){
 	clearInterval(this.timer);
 	this.timer = setInterval(function() {this.game.do_move("Down")}, timeout);
+}
+
+function ponerAudioBackground(){
+	if (!audio){
+		var audioElement=document.getElementById("audiofondo");
+		audioElement.loop=true;
+		audioElement.volume=0.5;
+		audioElement.play();
+		audio=true;
+	}
+}
+
+function loadAudio(url){
+	return new Promise(resolve => {
+		const audio = new Audio();
+		audio.addEventListener('loadeddata', () => {
+			resolve(audio);
+		});
+		audio.src = url;
+	});
 }
