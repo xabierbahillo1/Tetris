@@ -5,7 +5,36 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+    <center>
+        <h1><%= title %></h1>
+        <h2>Pulsa cualquier tecla para jugar</h2>
+        <h3> Mejores partidas </h3>
+        <table border="1">
+        <thead>
+            <tr>
+                <td> Usuario </td>
+                <td> Puntuación </td>
+            </tr>
+        </thead>
+        <tbody>
+            <%  ranking.forEach( function(ranking) { %>
+                <tr>
+                    <td><%= ranking.nombre %> </td>
+                    <td><%= ranking.puntuacion %> </td>
+                </tr>
+            <% }) %>
+        </tbody>
+      </table>
+    </center>
   </body>
+
+  <script>
+    //Si pulsa una tecla lleva a el juego del tetris
+    document.addEventListener('keydown', lanzaTetris, false);
+
+    function lanzaTetris(e){
+        window.location.href='/tetris.html';
+    }
+  </script
+
 </html>

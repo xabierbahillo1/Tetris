@@ -708,9 +708,28 @@ Tetris.prototype.do_move = function(direction) {
 				document.getElementById("audio").disabled=true;
 				//Guardo el record
 
-				var nombre=prompt("Has alcanzado un nuevo record!! Introduce tu nombre para guardarlo", "");
-				if (nombre !=null){
-					alert(nombre);
+				var nombre=prompt("Has obtenido "+puntuacion+" puntos!! Introduce tu nombre para guardar tu record", "");
+				if (nombre !=null && nombre!=''){
+					fetch('/ranking/add', {
+						method: 'POST',
+						headers: {
+							'Accept': 'application/json',
+							'Content-Type': 'application/json'
+						},
+
+						//make sure to serialize your JSON body
+						body: JSON.stringify({
+							nombre: nombre,
+							puntuacion: puntuacion
+						})
+					}).then(function (response) {
+						if(response.ok) {
+							alert('Puntuacion guardada correctamente');
+						} else {
+							alert('Error al guardar el record')
+						}
+					});
+
 				}
 				else {
 					alert("No has introducido ningun nombre. No se guardará el record")
