@@ -571,12 +571,11 @@ Tetris.prototype.init = function(){
 	// Pintar la pieza actual en el tablero
 	// Aclaración: (Board tiene un método para pintar)
 	this.board.draw_shape(this.current_shape);
-
+	window.requestAnimationFrame(renderCanvas);
 	// gestor de teclado
 	document.addEventListener('keydown', this.key_pressed.bind(this), false);
 	// Crea el código del método Tetris.animate_shape (más abajo lo verás)
 	this.animate_shape();
-
 }
 
 Tetris.prototype.key_pressed = function(e) {
@@ -692,14 +691,13 @@ Tetris.prototype.do_move = function(direction) {
 				Tetris.GAME_OVER=true;
 				clearInterval(this.timer); //Paro el reloj
 				//Dibujo el mensaje de game-over
-				notctx.fillStyle = "Black"; //cuadrado negro
-				notctx.fillRect(25, 200, 250, 100);
-				notcanvas.style = "display"; //muestro el canvas
-				notctx.font = "bold 42px fantasy"; //estilo de texto
-				notctx.fillStyle="red";
-				notctx.textAlign = "center";
-				notctx.strokeText("Game over!!", 150, 265);
-				notctx.fillText("Game over!!", 150, 265);
+				ctx.fillStyle = "Black"; //cuadrado negro
+				ctx.fillRect(25, 200, 250, 100);
+				ctx.font = "bold 42px fantasy"; //estilo de texto
+				ctx.fillStyle="red";
+				ctx.textAlign = "center";
+				ctx.strokeText("Game over!!", 150, 265);
+				ctx.fillText("Game over!!", 150, 265);
 				if (audio) {
 					document.getElementById("audiofondo").pause();
 					if (audio) {loadAudio("audio/gameOver.mp3").then(function(audio){ audio.volume=0.5; audio.play(); });} //Efecto sonoro game over
@@ -776,4 +774,9 @@ function loadAudio(url){
 		});
 		audio.src = url;
 	});
+}
+
+function renderCanvas(){
+	canvasctx.drawImage(buffer, 0, 0);
+	window.requestAnimationFrame(renderCanvas);
 }
