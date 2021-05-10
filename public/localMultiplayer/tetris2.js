@@ -29,11 +29,11 @@ Rectangle.prototype.drawPreview = function() {
 
 	// Pinta en el canvas preview
 
-	previewctx.fillStyle = this.color;
-	previewctx.fillRect(this.px,this.py,this.width,this.height);
-	previewctx.lineWidth = this.lineWidth;
-	previewctx.strokeStyle= 'black'; //Linea de borde negra
-	previewctx.strokeRect(this.px,this.py,this.width,this.height);
+	previewctx2.fillStyle = this.color;
+	previewctx2.fillRect(this.px,this.py,this.width,this.height);
+	previewctx2.lineWidth = this.lineWidth;
+	previewctx2.strokeStyle= 'black'; //Linea de borde negra
+	previewctx2.strokeRect(this.px,this.py,this.width,this.height);
 }
 
 Rectangle.prototype.draw = function() {
@@ -41,13 +41,13 @@ Rectangle.prototype.draw = function() {
 	// TU CÓDIGO AQUÍ:
 	// pinta un rectángulo del color actual en pantalla en la posición px,py, con
 	// la anchura y altura actual y una línea de anchura=lineWidth. Ten en cuenta que 
-	// en este ejemplo la variable ctx es global y que guarda el contexto (context) 
+	// en este ejemplo la variable ctx2 es global y que guarda el contexto (context) 
 	// para pintar en el canvas.
-	ctx.fillStyle = this.color;
-	ctx.fillRect(this.px,this.py,this.width,this.height);
-	ctx.lineWidth = this.lineWidth;
-	ctx.strokeStyle= 'black'; //Linea de borde negra
-	ctx.strokeRect(this.px,this.py,this.width,this.height);
+	ctx2.fillStyle = this.color;
+	ctx2.fillRect(this.px,this.py,this.width,this.height);
+	ctx2.lineWidth = this.lineWidth;
+	ctx2.strokeStyle= 'black'; //Linea de borde negra
+	ctx2.strokeRect(this.px,this.py,this.width,this.height);
 }
 
 //** Método introducido en el EJERCICIO 4 */
@@ -60,13 +60,13 @@ Rectangle.prototype.move = function(x,y){
 //** Método introducido en el EJERCICIO 4 */
 
 Rectangle.prototype.erase = function(){
-	ctx.beginPath();
-	ctx.lineWidth = this.lineWidth+2;
-	ctx.strokeStyle = Tetris.BOARD_COLOR;
-	ctx.rect(this.px, this.py, this.width, this.height);
-	ctx.stroke();
-	ctx.fillStyle = Tetris.BOARD_COLOR;
-	ctx.fill()
+	ctx2.beginPath();
+	ctx2.lineWidth = this.lineWidth+2;
+	ctx2.strokeStyle = Tetris2.BOARD_COLOR;
+	ctx2.rect(this.px, this.py, this.width, this.height);
+	ctx2.stroke();
+	ctx2.fillStyle = Tetris2.BOARD_COLOR;
+	ctx2.fill()
 
 }
 
@@ -401,7 +401,7 @@ Board.prototype.add_shape = function(shape){
 }
 Board.prototype.draw_shape_preview = function(shape){
 	//Borro lo que habia en el canvas
-	previewctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+	previewctx2.clearRect(0, 0, previewCanvas2.width, previewCanvas2.height);
 	//Pinto la nueva pieza
 	shape.drawPreview();
 	return true;
@@ -481,7 +481,7 @@ Board.prototype.remove_complete_rows = function(){
 	for (var y=0;y<this.height;y++){ // Para toda fila y del tablero
 		if (this.is_row_complete(y)){ // si la fila y está completa
 			//Linea, sumo 10 puntos * Nº lineas seguidas
-			if (audio) {loadAudio("audio/sonidoLinea.mp3").then(function(audio){ audio.volume=0.4; audio.play(); });} //Efecto sonoro linea
+			if (audio) {loadAudio("../audio/sonidoLinea.mp3").then(function(audio){ audio.volume=0.4; audio.play(); });} //Efecto sonoro linea
 			lineasSeguidas++;
 			this.delete_row(y); //borrar fila y
 			this.move_down_rows(y-1); //mover hacia abajo las filas superiores (es decir, move_down_rows(y-1) )
@@ -490,73 +490,73 @@ Board.prototype.remove_complete_rows = function(){
 	if (lineasSeguidas>0){ //He hecho al menos una linea, actualizo puntuacion
 		puntuacion=puntuacion+(10*lineasSeguidas);
 		if (lineasSeguidas==4) {
-			document.getElementById("puntuacion").innerHTML=puntuacion+ " Tetris1!!!"; //Muestro la nueva puntuacion junto con mensaje de tetris
+			document.getElementById("puntuacion2").innerHTML=puntuacion+ " Tetris!!!"; //Muestro la nueva puntuacion junto con mensaje de tetris
 			setTimeout(function() { //A los 3 segundos borro el mensaje tetris
-				document.getElementById("puntuacion").innerHTML=puntuacion;
+				document.getElementById("puntuacion2").innerHTML=puntuacion;
 			},3000);
 		}
 		else if (lineasSeguidas>1){
-			document.getElementById("puntuacion").innerHTML=puntuacion+ " "+lineasSeguidas+" filas seguidas!!!"; //Muestro la nueva puntuacion junto con las filas eliminadas
+			document.getElementById("puntuacion2").innerHTML=puntuacion+ " "+lineasSeguidas+" filas seguidas!!!"; //Muestro la nueva puntuacion junto con las filas eliminadas
 			setTimeout(function() { //A los 3 segundos borro el mensaje
-				document.getElementById("puntuacion").innerHTML=puntuacion;
+				document.getElementById("puntuacion2").innerHTML=puntuacion;
 			},3000);
 		}
 		else{
-			document.getElementById("puntuacion").innerHTML=puntuacion //Muestro la puntuacion
+			document.getElementById("puntuacion2").innerHTML=puntuacion //Muestro la puntuacion
 		}
 		//Gestiono aumento de dificultad
 
 	}
 };
-// ==================== Tetris1 ==========================
+// ==================== Tetris2 ==========================
 
-function Tetris() {
-	this.board = new Board(Tetris.BOARD_WIDTH, Tetris.BOARD_HEIGHT);
+function Tetris2() {
+	this.board = new Board(Tetris2.BOARD_WIDTH, Tetris2.BOARD_HEIGHT);
 }
 
-Tetris.SHAPES = [I_Shape, J_Shape, L_Shape, O_Shape, S_Shape, T_Shape, Z_Shape];
-Tetris.DIRECTION = {'Left':[-1, 0], 'Right':[1, 0], 'Down':[0, 1]};
-Tetris.BOARD_WIDTH = 10;
-Tetris.BOARD_HEIGHT = 20;
-Tetris.BOARD_COLOR='white';
-Tetris.GAME_OVER=false;
-Tetris.TIMEOUT=1000;
-Tetris.PAUSED=false;
-Tetris.PREVIEW_SHAPE;
+Tetris2.SHAPES = [I_Shape, J_Shape, L_Shape, O_Shape, S_Shape, T_Shape, Z_Shape];
+Tetris2.DIRECTION = {'Left':[-1, 0], 'Right':[1, 0], 'Down':[0, 1]};
+Tetris2.BOARD_WIDTH = 10;
+Tetris2.BOARD_HEIGHT = 20;
+Tetris2.BOARD_COLOR='white';
+Tetris2.GAME_OVER=false;
+Tetris2.TIMEOUT=1000;
+Tetris2.PAUSED=false;
+Tetris2.PREVIEW_SHAPE;
 
-Tetris.prototype.create_new_shape = function(){
+Tetris2.prototype.create_new_shape = function(){
 
 	// TU CÓDIGO AQUÍ:
-	// Elegir un nombre de pieza al azar del array Tetris1.SHAPES
+	// Elegir un nombre de pieza al azar del array Tetris2.SHAPES
 	// Crear una instancia de ese tipo de pieza (x = centro del tablero, y = 0)
 	// Devolver la referencia de esa pieza nueva
-	if (Tetris.PREVIEW_SHAPE==null){ //Si no tengo pieza preview, genero la preview y actual
+	if (Tetris2.PREVIEW_SHAPE==null){ //Si no tengo pieza preview, genero la preview y actual
 		//Creo la pieza preview
-		var index= Math.floor(Math.random() * Tetris.SHAPES.length); //Obtengo un indice aleatorio para sacar la pieza al azar
-		Tetris.PREVIEW_SHAPE= Tetris.SHAPES[index];
+		var index= Math.floor(Math.random() * Tetris2.SHAPES.length); //Obtengo un indice aleatorio para sacar la pieza al azar
+		Tetris2.PREVIEW_SHAPE= Tetris2.SHAPES[index];
 		//Pinto pieza preview
-		this.board.draw_shape_preview(new Tetris.PREVIEW_SHAPE(new Point(2,1)));
+		this.board.draw_shape_preview(new Tetris2.PREVIEW_SHAPE(new Point(2,1)));
 		//Creo la pieza actual
-		var index= Math.floor(Math.random() * Tetris.SHAPES.length); //Obtengo un indice aleatorio para sacar la pieza al azar
-		var tetronimo= Tetris.SHAPES[index];
-		return new tetronimo(new Point(Tetris.BOARD_WIDTH/2,0));
+		var index= Math.floor(Math.random() * Tetris2.SHAPES.length); //Obtengo un indice aleatorio para sacar la pieza al azar
+		var tetronimo= Tetris2.SHAPES[index];
+		return new tetronimo(new Point(Tetris2.BOARD_WIDTH/2,0));
 	}
 	else { //Tengo pieza
-		tetronimo=Tetris.PREVIEW_SHAPE; //Obtengo la pieza preview
+		tetronimo=Tetris2.PREVIEW_SHAPE; //Obtengo la pieza preview
 		//Saco una nueva pieza para mostrar en preview
-		var index= Math.floor(Math.random() * Tetris.SHAPES.length); //Obtengo un indice aleatorio para sacar la pieza al azar
-		var tetronimoNuevo= Tetris.SHAPES[index];
-		Tetris.PREVIEW_SHAPE=tetronimoNuevo; //Guardo la siguiente pieza
+		var index= Math.floor(Math.random() * Tetris2.SHAPES.length); //Obtengo un indice aleatorio para sacar la pieza al azar
+		var tetronimoNuevo= Tetris2.SHAPES[index];
+		Tetris2.PREVIEW_SHAPE=tetronimoNuevo; //Guardo la siguiente pieza
 		//Pinto pieza preview
-		this.board.draw_shape_preview(new Tetris.PREVIEW_SHAPE(new Point(3,1)));
-		return new tetronimo(new Point(Tetris.BOARD_WIDTH/2,0)); //Devuelvo la pieza preview
+		this.board.draw_shape_preview(new Tetris2.PREVIEW_SHAPE(new Point(3,1)));
+		return new tetronimo(new Point(Tetris2.BOARD_WIDTH/2,0)); //Devuelvo la pieza preview
 	}
 
 	//Modificado temporalmente para devolver un S_shape
-	//return new I_Shape(new Point(Tetris1.BOARD_WIDTH/2,0));
+	//return new I_Shape(new Point(Tetris2.BOARD_WIDTH/2,0));
 }
 
-Tetris.prototype.init = function(){
+Tetris2.prototype.init = function(){
 
 	/**************
 	 EJERCICIO 4
@@ -571,14 +571,14 @@ Tetris.prototype.init = function(){
 	// Pintar la pieza actual en el tablero
 	// Aclaración: (Board tiene un método para pintar)
 	this.board.draw_shape(this.current_shape);
-	window.requestAnimationFrame(renderCanvas);
+	window.requestAnimationFrame(renderCanvas2);
 	// gestor de teclado
 	document.addEventListener('keydown', this.key_pressed.bind(this), false);
-	// Crea el código del método Tetris1.animate_shape (más abajo lo verás)
+	// Crea el código del método Tetris2.animate_shape (más abajo lo verás)
 	this.animate_shape();
 }
 
-Tetris.prototype.key_pressed = function(e) {
+Tetris2.prototype.key_pressed = function(e) {
 
 	var key = e.keyCode ? e.keyCode : e.which;
 
@@ -587,10 +587,10 @@ Tetris.prototype.key_pressed = function(e) {
 	// ha pulsado el usuario. ¿Cuál es el código key que corresponde
 	// a mover la pieza hacia la izquierda, la derecha, abajo o a rotarla?
 	console.log(key);
-	if (!Tetris.PAUSED) { //Si el juego no está pausado
+	if (!Tetris2.PAUSED) { //Si el juego no está pausado
 		if (key == 80) { //Pulsa P, pausa el juego
 			clearInterval(this.timer);
-			Tetris.PAUSED = true;
+			Tetris2.PAUSED = true;
 			document.getElementById("juegoPausado").style = "position: absolute;left: 330px; top: 200px; color:#FF0000; font-size:20px; display; ";
 			if (audio){
 				document.getElementById("audiofondo").pause();
@@ -598,33 +598,33 @@ Tetris.prototype.key_pressed = function(e) {
 			document.getElementById("audio").disabled=true;
 		}
 
-		if (key == 37) {
+		if (key == 65) { //A
 			this.do_move("Left");
 		}
-		if (key == 39) {
+		if (key == 68) { //D
 			this.do_move("Right");
 		}
-		if (key == 40) {
+		if (key == 83) { //S
 			this.do_move("Down");
 		}
-		// TU CÓDIGO AQUÍ: Añadir una condición para que si el jugador pulsa la tecla "Espacio", la pieza caiga en picado
-		if (key == 32) {
-			var dx = Tetris.DIRECTION["Down"][0];
-			var dy = Tetris.DIRECTION["Down"][1];
+		// TU CÓDIGO AQUÍ: Añadir una condición para que si el jugador pulsa la tecla "Q", la pieza caiga en picado
+		if (key == 81) { //Q
+			var dx = Tetris2.DIRECTION["Down"][0];
+			var dy = Tetris2.DIRECTION["Down"][1];
 			while (this.current_shape.can_move(this.board, dx, dy)) { //Mientras se pueda mover hacia abajo muevo
 				this.do_move("Down");
 			}
 			this.do_move("Down"); //Muevo una vez mas para que saque la siguiente pieza
 		}
-		if (key == 38) {
+		if (key == 69) { //Rotar E
 			this.do_rotate();
-			if (audio) {loadAudio("audio/giroPieza.mp3").then(function(audio){ audio.volume=0.5; audio.play(); });} //Efecto sonoro giro pieza
+			if (audio) {loadAudio("../audio/giroPieza.mp3").then(function(audio){ audio.volume=0.5; audio.play(); });} //Efecto sonoro giro pieza
 		}
 	}
 	else{ //Juego pausado
 		if (key ==80 ) { //Pulsa P, retoma el juego
-			this.timer = setInterval(function() {this.game.do_move("Down")}, Tetris.TIMEOUT);
-			Tetris.PAUSED=false;
+			this.timer = setInterval(function() {this.game2.do_move("Down")}, Tetris2.TIMEOUT);
+			Tetris2.PAUSED=false;
 			document.getElementById("juegoPausado").style="display:none";
 			if (audio) {
 				document.getElementById("audiofondo").play();
@@ -639,39 +639,39 @@ Tetris.prototype.key_pressed = function(e) {
 	//Barra espaciadora: 32
 
 }
-Tetris.prototype.do_move = function(direction) {
+Tetris2.prototype.do_move = function(direction) {
 
 	// TU CÓDIGO AQUÍ: el usuario ha pulsado la tecla Left, Right o Down (izquierda,
 	// derecha o abajo). Tenemos que mover la pieza en la dirección correspondiente
-	// a esa tecla. Recuerda que el array Tetris1.DIRECTION guarda los desplazamientos
-	// en cada dirección, por tanto, si accedes a Tetris1.DIRECTION[direction],
+	// a esa tecla. Recuerda que el array Tetris2.DIRECTION guarda los desplazamientos
+	// en cada dirección, por tanto, si accedes a Tetris2.DIRECTION[direction],
 	// obtendrás el desplazamiento (dx, dy). A continuación analiza si la pieza actual
 	// se puede mover con ese desplazamiento. En caso afirmativo, mueve la pieza.
-	if (!Tetris.GAME_OVER) {
+	if (!Tetris2.GAME_OVER) {
 
 		//Gestion de la dificultad en funcion de la puntuacion
 		if (puntuacion>=100 && puntuacion<200){ //Si puntuacion entre 100 y 200, nivel 2
-			Tetris.TIMEOUT=700; //Se guarda el tiempo para volver a ponerlo en el PAUSE
-			this.reanimate_shape(Tetris.TIMEOUT);
-			document.getElementById("nivel").innerHTML=2;
+			Tetris2.TIMEOUT=700; //Se guarda el tiempo para volver a ponerlo en el PAUSE
+			this.reanimate_shape(Tetris2.TIMEOUT);
+			document.getElementById("nivel2").innerHTML=2;
 		}
 		else if (puntuacion>=200 && puntuacion<300){ //Si puntuacion mayor de 200 y menor de 300, nivel 3
-			Tetris.TIMEOUT=500;
-			this.reanimate_shape(Tetris.TIMEOUT);
-			document.getElementById("nivel").innerHTML=3;
+			Tetris2.TIMEOUT=500;
+			this.reanimate_shape(Tetris2.TIMEOUT);
+			document.getElementById("nivel2").innerHTML=3;
 		}
 		else if (puntuacion>=300 && puntuacion<400){ //Si puntuacion mayor de 300, nivel 4
-			Tetris.TIMEOUT=400;
-			this.reanimate_shape(Tetris.TIMEOUT);
-			document.getElementById("nivel").innerHTML=4;
+			Tetris2.TIMEOUT=400;
+			this.reanimate_shape(Tetris2.TIMEOUT);
+			document.getElementById("nivel2").innerHTML=4;
 		}
 		else if (puntuacion>=400){
-			Tetris.TIMEOUT=300;
-			this.reanimate_shape(Tetris.TIMEOUT);
-			document.getElementById("nivel").innerHTML=5;
+			Tetris2.TIMEOUT=300;
+			this.reanimate_shape(Tetris2.TIMEOUT);
+			document.getElementById("nivel2").innerHTML=5;
 		}
 		//Gestion del movimiento
-		var direccion = Tetris.DIRECTION[direction]
+		var direccion = Tetris2.DIRECTION[direction]
 		var dx = direccion[0];
 		var dy = direccion[1];
 		if (this.current_shape.can_move(this.board, dx, dy)) {
@@ -679,7 +679,7 @@ Tetris.prototype.do_move = function(direction) {
 		}
 		/* Código que se pide en el EJERCICIO 6 */
 		else if (direction == 'Down') {
-			if (audio) {loadAudio("audio/piezaClic.mp3").then( audio => audio.play());} //Efecto sonoro cuando colocas una pieza
+			if (audio) {loadAudio("../audio/piezaClic.mp3").then( audio => audio.play());} //Efecto sonoro cuando colocas una pieza
 			this.board.add_shape(this.current_shape);
 			this.board.remove_complete_rows(); //Miro si hay alguna fila para eliminar
 			if (this.board.can_move(this.board.width / 2, 0)) { //Si se puede añadir
@@ -688,50 +688,25 @@ Tetris.prototype.do_move = function(direction) {
 				this.board.draw_shape(this.current_shape);
 
 			} else { //Si no, game over
-				Tetris.GAME_OVER=true;
+				Tetris2.GAME_OVER=true;
 				clearInterval(this.timer); //Paro el reloj
 				//Dibujo el mensaje de game-over
-				ctx.fillStyle = "Black"; //cuadrado negro
-				ctx.fillRect(25, 200, 250, 100);
-				ctx.font = "bold 42px fantasy"; //estilo de texto
-				ctx.fillStyle="red";
-				ctx.textAlign = "center";
-				ctx.strokeText("Game over!!", 150, 265);
-				ctx.fillText("Game over!!", 150, 265);
-				if (audio) {
+				ctx2.fillStyle = "Black"; //cuadrado negro
+				ctx2.fillRect(25, 200, 250, 100);
+				ctx2.font = "bold 42px fantasy"; //estilo de texto
+				ctx2.fillStyle="red";
+				ctx2.textAlign = "center";
+				ctx2.strokeText("Game over!!", 150, 265);
+				ctx2.fillText("Game over!!", 150, 265);
+				if (audio) {loadAudio("../audio/gameOver.mp3").then(function(audio){ audio.volume=0.5; audio.play(); });} //Efecto sonoro game over
+				if (audio && Tetris1.GAME_OVER) { //Si audio y el otro jugador tambien esta en game over paro musica de fondo
 					document.getElementById("audiofondo").pause();
-					if (audio) {loadAudio("audio/gameOver.mp3").then(function(audio){ audio.volume=0.5; audio.play(); });} //Efecto sonoro game over
 					audio=false;
 				}
-				document.getElementById("audio").disabled=true;
-				//Guardo el record
-
-				var nombre=prompt("Has obtenido "+puntuacion+" puntos!! Introduce tu nombre para guardar tu record", "");
-				if (nombre !=null && nombre!=''){
-					fetch('/ranking/add', {
-						method: 'POST',
-						headers: {
-							'Accept': 'application/json',
-							'Content-Type': 'application/json'
-						},
-
-						//make sure to serialize your JSON body
-						body: JSON.stringify({
-							nombre: nombre,
-							puntuacion: puntuacion
-						})
-					}).then(function (response) {
-						if(response.ok) {
-							alert('Puntuacion guardada correctamente');
-						} else {
-							alert('Error al guardar el record')
-						}
-					});
-
+				if (Tetris1.GAME_OVER){
+					document.getElementById("audio").disabled=true;
 				}
-				else {
-					alert("No has introducido ningun nombre. No se guardará el record")
-				}
+
 			}
 
 		}
@@ -739,7 +714,7 @@ Tetris.prototype.do_move = function(direction) {
 	// TU CÓDIGO AQUÍ: añade la pieza actual al grid. Crea una nueva pieza y dibújala en el tablero.
 }
 /***** EJERCICIO 8 ******/
-Tetris.prototype.do_rotate = function(){
+Tetris2.prototype.do_rotate = function(){
 
 	// TU CÓDIGO AQUÍ: si la pieza actual se puede rotar, rótala. Recueda que Shape.can_rotate y Shape.rotate ya están programadas.
 	if (this.current_shape.can_rotate(this.board)){
@@ -747,13 +722,13 @@ Tetris.prototype.do_rotate = function(){
 	}
 }
 // TU CÓDIGO AQUÍ: genera un timer que mueva hacia abajo la pieza actual cada segundo
-Tetris.prototype.animate_shape = function(){
-	this.timer = setInterval(function() {this.game.do_move("Down")}, 1000);
+Tetris2.prototype.animate_shape = function(){
+	this.timer = setInterval(function() {this.game2.do_move("Down")}, 1000);
 }
 
-Tetris.prototype.reanimate_shape = function(timeout){
+Tetris2.prototype.reanimate_shape = function(timeout){
 	clearInterval(this.timer);
-	this.timer = setInterval(function() {this.game.do_move("Down")}, timeout);
+	this.timer = setInterval(function() {this.game2.do_move("Down")}, timeout);
 }
 
 function ponerAudioBackground(){
@@ -776,7 +751,7 @@ function loadAudio(url){
 	});
 }
 
-function renderCanvas(){
-	canvasctx.drawImage(buffer, 0, 0);
-	window.requestAnimationFrame(renderCanvas);
+function renderCanvas2(){
+	canvas2ctx.drawImage(buffer2, 0, 0);
+	window.requestAnimationFrame(renderCanvas2);
 }
