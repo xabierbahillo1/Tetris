@@ -1,0 +1,23 @@
+#canvasPlayer1 {
+    border:1px solid #000000;
+}
+#previewCanvasPlayer1 {
+    position: absolute;
+    left: 330px;
+    border:1px solid #000000;
+}
+#canvasPlayer2 {
+    border:1px solid #000000;
+    position: absolute;
+    left: 600px;
+}
+#previewCanvasPlayer2 {
+    position: absolute;
+    left: 930px;
+    border:1px solid #000000;
+}
+#audio {
+    position: absolute;
+    top: 660px;
+    left: 10px;
+}
