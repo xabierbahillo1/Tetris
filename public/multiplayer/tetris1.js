@@ -1,5 +1,6 @@
 //Variable global que guarda la puntuacion1 actual
 var puntuacion1=0;
+var nivel=1;
 var audio = false; //Indica si esta reproduciendo la musica o no
 
 // ************************************
@@ -522,8 +523,7 @@ Tetris1.Board1_COLOR='white';
 Tetris1.GAME_OVER=false;
 Tetris1.TIMEOUT=1000;
 Tetris1.PAUSED=false;
-Tetris1.PREVIEW_Shape1;
-
+Tetris1.PLAYER2_GAMEOVER=false;
 Tetris1.prototype.create_new_Shape1 = function(){
 
 	// TU CÓDIGO AQUÍ:
@@ -534,6 +534,8 @@ Tetris1.prototype.create_new_Shape1 = function(){
 		//Creo la pieza preview
 		var index= Math.floor(Math.random() * Tetris1.Shape1S.length); //Obtengo un indice aleatorio para sacar la pieza al azar
 		Tetris1.PREVIEW_Shape1= Tetris1.Shape1S[index];
+		var shapeInstance=new Tetris1.PREVIEW_Shape1(new Point(2,1));
+		this.previewShape=shapeInstance;
 		//Pinto pieza preview
 		this.Board1.draw_Shape1_preview(new Tetris1.PREVIEW_Shape1(new Point(2,1)));
 		//Creo la pieza actual
@@ -547,6 +549,8 @@ Tetris1.prototype.create_new_Shape1 = function(){
 		var index= Math.floor(Math.random() * Tetris1.Shape1S.length); //Obtengo un indice aleatorio para sacar la pieza al azar
 		var tetronimoNuevo= Tetris1.Shape1S[index];
 		Tetris1.PREVIEW_Shape1=tetronimoNuevo; //Guardo la siguiente pieza
+		var shapeInstance=new Tetris1.PREVIEW_Shape1(new Point(2,1));
+		this.previewShape=shapeInstance;
 		//Pinto pieza preview
 		this.Board1.draw_Shape1_preview(new Tetris1.PREVIEW_Shape1(new Point(3,1)));
 		return new tetronimo(new Point(Tetris1.Board1_WIDTH/2,0)); //Devuelvo la pieza preview
@@ -567,6 +571,7 @@ Tetris1.prototype.init = function(){
 
 	this.current_Shape1 = this.create_new_Shape1()
 
+	document.getElementById("esperarJugador").style= "display:none";
 	// TU CÓDIGO AQUÍ:
 	// Pintar la pieza actual en el tablero
 	// Aclaración: (Board1 tiene un método para pintar)
@@ -639,6 +644,57 @@ Tetris1.prototype.key_pressed = function(e) {
 	//Barra espaciadora: 32
 
 }
+//Metodos para pintar interaccion con el segundo jugador
+Tetris1.prototype.dibujarBloqueSegundoJugador = function (block){
+	//Dibuja el bloque del segundo jugador
+	canvas2ctx.fillStyle = block.color;
+	canvas2ctx.fillRect(block.px,block.py,block.width,block.height);
+	canvas2ctx.lineWidth = block.lineWidth;
+	canvas2ctx.strokeStyle= 'black'; //Linea de borde negra
+	canvas2ctx.strokeRect(block.px,block.py,block.width,block.height);
+}
+
+Tetris1.prototype.limpiarSegundoJugador = function (){
+	//Limpia el canvas del segundo jugador
+	canvas2ctx.fillStyle = 'white';
+	canvas2ctx.fillRect(0,0,canvas2.width,canvas2.height);
+	previewctx2.fillStyle = 'white';
+	previewctx2.fillRect(0,0,previewCanvas2.width,previewCanvas2.height);
+}
+Tetris1.prototype.dibujarPreviewSegundoJugador = function (block){
+	//Limpia el canvas preview del segundo jugador
+	previewctx2.fillStyle = block.color;
+	previewctx2.fillRect(block.px,block.py,block.width,block.height);
+	previewctx2.lineWidth = block.lineWidth;
+	previewctx2.strokeStyle= 'black'; //Linea de borde negra
+	previewctx2.strokeRect(block.px,block.py,block.width,block.height);
+}
+Tetris1.prototype.actualizarPuntuacionSegundoJugador = function (punt,niv){
+	//Actualiza nivel y puntuacion del segundo jugador
+	document.getElementById("puntuacion2").innerHTML=punt;
+	document.getElementById("nivel2").innerHTML=niv;
+}
+
+Tetris1.prototype.pintarGameOverSegundoJugador = function (punt,niv){
+	//Actualiza nivel y puntuacion del segundo jugador
+	canvas2ctx.fillStyle = "Black"; //cuadrado negro
+	canvas2ctx.fillRect(25, 200, 250, 100);
+	canvas2ctx.font = "bold 42px fantasy"; //estilo de texto
+	canvas2ctx.fillStyle="red";
+	canvas2ctx.textAlign = "center";
+	canvas2ctx.strokeText("Game over!!", 150, 265);
+	canvas2ctx.fillText("Game over!!", 150, 265);
+	if (audio) {loadAudio("../audio/gameOver.mp3").then(function(audio){ audio.volume=0.5; audio.play(); });} //Efecto sonoro game over
+	Tetris1.PLAYER2_GAMEOVER=true;
+	if (audio && Tetris1.GAME_OVER) {
+		document.getElementById("audiofondo").pause();
+		audio=false;
+	}
+	if (Tetris1.GAME_OVER) {
+		document.getElementById("audio").disabled=true;
+	}
+}
+
 Tetris1.prototype.do_move = function(direction) {
 
 	// TU CÓDIGO AQUÍ: el usuario ha pulsado la tecla Left, Right o Down (izquierda,
@@ -653,21 +709,25 @@ Tetris1.prototype.do_move = function(direction) {
 		if (puntuacion1>=100 && puntuacion1<200){ //Si puntuacion1 entre 100 y 200, nivel 2
 			Tetris1.TIMEOUT=700; //Se guarda el tiempo para volver a ponerlo en el PAUSE
 			this.reanimate_Shape1(Tetris1.TIMEOUT);
+			nivel=2;
 			document.getElementById("nivel1").innerHTML=2;
 		}
 		else if (puntuacion1>=200 && puntuacion1<300){ //Si puntuacion1 mayor de 200 y menor de 300, nivel 3
 			Tetris1.TIMEOUT=500;
 			this.reanimate_Shape1(Tetris1.TIMEOUT);
+			nivel=3;
 			document.getElementById("nivel1").innerHTML=3;
 		}
 		else if (puntuacion1>=300 && puntuacion1<400){ //Si puntuacion1 mayor de 300, nivel 4
 			Tetris1.TIMEOUT=400;
 			this.reanimate_Shape1(Tetris1.TIMEOUT);
+			nivel=4;
 			document.getElementById("nivel1").innerHTML=4;
 		}
 		else if (puntuacion1>=400){
 			Tetris1.TIMEOUT=300;
 			this.reanimate_Shape1(Tetris1.TIMEOUT);
+			nivel=5;
 			document.getElementById("nivel1").innerHTML=5;
 		}
 		//Gestion del movimiento
@@ -689,6 +749,7 @@ Tetris1.prototype.do_move = function(direction) {
 
 			} else { //Si no, game over
 				Tetris1.GAME_OVER=true;
+				this.GAMEOVER=true;
 				clearInterval(this.timer); //Paro el reloj
 				//Dibujo el mensaje de game-over
 				ctx1.fillStyle = "Black"; //cuadrado negro
@@ -699,11 +760,11 @@ Tetris1.prototype.do_move = function(direction) {
 				ctx1.strokeText("Game over!!", 150, 265);
 				ctx1.fillText("Game over!!", 150, 265);
 				if (audio) {loadAudio("../audio/gameOver.mp3").then(function(audio){ audio.volume=0.5; audio.play(); });} //Efecto sonoro game over
-				if (audio && Tetris2.GAME_OVER) {
+				if (audio && Tetris1.PLAYER2_GAMEOVER) {
 					document.getElementById("audiofondo").pause();
 					audio=false;
 				}
-				if (Tetris2.GAME_OVER) {
+				if (Tetris1.PLAYER2_GAMEOVER) {
 					document.getElementById("audio").disabled=true;
 				}
 
@@ -755,3 +816,4 @@ function renderCanvas1(){
 	canvas1ctx.drawImage(buffer1, 0, 0);
 	window.requestAnimationFrame(renderCanvas1);
 }
+
