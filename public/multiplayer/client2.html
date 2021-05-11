@@ -1,0 +1,85 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+   <title>Tetris Multiplayer Client 2</title>
+   <link rel="stylesheet" href="tetris.css">
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+   <script src="tetris1.js"></script>
+    <script src="socket2.js"></script>
+</head>
+<body>
+    <p>
+        <span> Nivel: </span> <span id="nivel1">1</span>&nbsp&nbsp<span>Puntuacion: </span><span id="puntuacion1">0</span>
+        <span style="position: absolute; left: 350px;"> Proxima pieza: </span>
+        <span style="display:none" id="juegoPausado"> Juego pausado!! </span>
+    </p>
+
+    <p style="position: absolute;left:600px;top:0px">
+        <span> Nivel: </span> <span id="nivel2">1</span>&nbsp&nbsp<span>Puntuacion: </span><span id="puntuacion2">0</span>
+        <span style="position: relative; left: 200px;top:0px"> Proxima pieza: </span>
+        </span>
+    </p>
+
+    <p style="position: absolute;left:100px;top:650px" id="esperarJugador">
+        <span style="color:red"> Esperando al primer jugador</span>
+        </span>
+    </p>
+    <canvas id="canvasPlayer1" width="300" height="600"></canvas>
+    <canvas id="previewCanvasPlayer1" width="180" height="130" style></canvas>
+
+    <canvas id="canvasPlayer2" width="300" height="600"></canvas>
+    <canvas id="previewCanvasPlayer2" width="180" height="130" style></canvas>
+
+
+    <input type="button" id="audio" class="audio" value="Audio">
+    <audio id="audiofondo" src="../audio/musicaTetris.mp3">
+<script>
+// ===== main ====
+
+// Jugador 1
+var canvas1 = document.getElementById("canvasPlayer1");
+var canvas1ctx = canvas1.getContext("2d");
+
+//canvas buffer player1
+const buffer1 = document.createElement("canvas")
+buffer1.width = canvas1.width;
+buffer1.height= canvas1.height;
+var ctx1= buffer1.getContext("2d")
+// clear the canvas
+ctx1.fillStyle = 'white';
+ctx1.fillRect(0,0,canvas1.width,canvas1.height);
+
+//canvas pieza preview
+var previewCanvas1 = document.getElementById("previewCanvasPlayer1");
+var previewctx1 = previewCanvas1.getContext("2d");
+
+var game1 = new Tetris1();
+//game1.init();
+
+//Jugador 2
+var canvas2 = document.getElementById("canvasPlayer2");
+var canvas2ctx = canvas2.getContext("2d");
+
+//canvas buffer player1
+const buffer2 = document.createElement("canvas")
+buffer2.width = canvas2.width;
+buffer2.height= canvas2.height;
+var ctx2= buffer2.getContext("2d")
+// clear the canvas
+ctx2.fillStyle = 'white';
+ctx2.fillRect(0,0,canvas2.width,canvas2.height);
+
+//canvas pieza preview
+var previewCanvas2 = document.getElementById("previewCanvasPlayer2");
+var previewctx2 = previewCanvas2.getContext("2d");
+
+//var game2 = new Tetris2();
+//game2.init();
+
+var botonAudio = document.getElementById("audio");
+botonAudio.onclick=ponerAudioBackground;
+
+
+</script>
+</body>
+</html>

@@ -7,7 +7,8 @@
 var app = require('../app');
 var debug = require('debug')('tetrisexpress:server');
 var http = require('http');
-
+var fs = require('fs');
+var https = require('https');
 /**
  * Get port from environment and store in Express.
  */
@@ -29,6 +30,78 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
+
+const httpsServer = https.createServer({
+  key: fs.readFileSync('key1.pem'),
+  cert: fs.readFileSync('cert1.pem')
+}, app);
+
+httpsServer
+    .listen(8080, function () {
+      console.log('Example app listening on port 8080! Go to https://localhost:8080/')
+    });
+
+const io = require('socket.io');
+// create a WebSocket listener for the same server
+const realtimeListener = io.listen(httpsServer);
+
+
+// object to store desktop sockets
+let client1Socket = null;
+let client2Socket = null;
+// the socket1 can be a phone or a desktop
+realtimeListener.on('connection', function (socket) {
+
+  // receives a connect message from a desktop (for this example, we will only have one)
+  socket.on("client1-connect", function () {
+    console.log("Client1 connected");
+    if (client1Socket!=null){ //Ya hay una conexion, la reinicio
+      client1Socket=null;
+      client2Socket=null;
+    }
+    client1Socket= socket;
+    if (client2Socket) {
+      // Informo para iniciar el juego
+      client1Socket.emit('start-game');
+      client2Socket.emit('start-game');
+    }
+  });
+
+  // receives a connect message from a phone
+  socket.on("client2-connect", function () {
+    console.log("Client2 connected");
+    if (client2Socket!=null){ //Ya hay una conexion, la reinicio
+      client2Socket=null;
+      client1Socket=null;
+    }
+    client2Socket= socket;
+    if (client1Socket) {
+      // Informo para iniciar el juego
+      client1Socket.emit('start-game');
+      client2Socket.emit('start-game');
+    }
+  });
+
+  socket.on("sendGameState", function(gameState){
+    if (gameState.host == 'client1'){
+      client2Socket.emit('receiveGameState', gameState);
+    }
+    else {
+      client1Socket.emit('receiveGameState', gameState);
+    }
+  });
+
+  socket.on("gameOver", function(json){
+    console.log("Host emite game over");
+
+    if (json.host == 'client1'){
+      client2Socket.emit('receiveGameOver');
+    }
+    else {
+      client1Socket.emit('receiveGameOver');
+    }
+  });
+});
 /**
  * Normalize a port into a number, string, or false.
  */
