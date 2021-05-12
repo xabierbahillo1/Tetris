@@ -7,15 +7,20 @@
   },
   "dependencies": {
     "body-parser": "^1.18.2",
+    "canvas": "^2.7.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "ejs": "~2.6.1",
     "express": "~4.16.1",
     "express-validator": "^5.1.2",
     "http-errors": "~1.6.3",
+    "jquery": "^3.6.0",
+    "jsdom": "^16.5.3",
     "mongojs": "^2.5.0",
     "morgan": "~1.9.1",
     "qunit": "^2.15.0",
+    "qunit-assert-canvas": "^1.1.0",
+    "qunitjs": "^2.4.1",
     "socket.io": "^2.3.0"
   }
 }
